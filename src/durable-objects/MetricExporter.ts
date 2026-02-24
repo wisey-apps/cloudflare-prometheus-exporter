@@ -7,7 +7,11 @@ import {
 import { isPaidTierGraphQLQuery } from "../cloudflare/queries";
 import { parseCommaSeparated, partitionZonesByTier } from "../lib/filters";
 import { createLogger, type Logger } from "../lib/logger";
-import type { MetricDefinition, MetricValue } from "../lib/metrics";
+import {
+	type MetricDefinition,
+	type MetricValue,
+	mergeMetricDefinitions,
+} from "../lib/metrics";
 import { getConfig, type ResolvedConfig } from "../lib/runtime-config";
 import { getTimeRange, metricKey } from "../lib/time";
 import {
@@ -455,15 +459,54 @@ export class MetricExporter extends DurableObject<Env> {
 				}
 			}
 
-			const zoneIds = zonesToQuery.map((z) => z.id);
-			return client.getZoneMetrics(
-				queryName,
-				zoneIds,
-				zonesToQuery,
-				firewallRules,
-				timeRange,
-				hostMetricsAllowlist,
-			);
+			// Cloudflare GraphQL API limits queries to 10 zones (zonesHardLimit).
+			// Chunk zones and merge results to support accounts with >10 zones.
+			const ZONES_PER_CHUNK = 10;
+
+			if (zonesToQuery.length <= ZONES_PER_CHUNK) {
+				const zoneIds = zonesToQuery.map((z) => z.id);
+				return client.getZoneMetrics(
+					queryName,
+					zoneIds,
+					zonesToQuery,
+					firewallRules,
+					timeRange,
+					hostMetricsAllowlist,
+				);
+			}
+
+			const chunkResults: MetricDefinition[][] = [];
+			for (let i = 0; i < zonesToQuery.length; i += ZONES_PER_CHUNK) {
+				const chunkZones = zonesToQuery.slice(i, i + ZONES_PER_CHUNK);
+				const chunkIds = chunkZones.map((z) => z.id);
+
+				try {
+					const metrics = await client.getZoneMetrics(
+						queryName,
+						chunkIds,
+						chunkZones,
+						firewallRules,
+						timeRange,
+						hostMetricsAllowlist,
+					);
+					chunkResults.push(metrics);
+				} catch (error) {
+					// Log and continue — partial results from other chunks are still valuable.
+					// Missing zones don't increment their counters this cycle;
+					// processCounters() accumulates per (name, labels) key so existing
+					// counter values are preserved. Next alarm retries all chunks.
+					logger.error("Zone chunk query failed", {
+						query: queryName,
+						chunk_index: Math.floor(i / ZONES_PER_CHUNK),
+						chunk_size: chunkZones.length,
+						total_zones: zonesToQuery.length,
+						failed_zones: chunkZones.map((z) => z.name),
+						error: error instanceof Error ? error.message : String(error),
+					});
+				}
+			}
+
+			return mergeMetricDefinitions(...chunkResults);
 		}
 
 		// Unknown query - should not happen if IDs are constructed correctly

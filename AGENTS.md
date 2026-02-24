@@ -104,6 +104,6 @@ bun run cf-typegen   # Regenerate worker-configuration.d.ts
 
 **Docker:** For local Prometheus scraping only, not production deployment
 
-**Rate limiting:** `CF_API_RATE_LIMITER` binding (40 req/10s) - applied to Cloudflare API calls
+**Rate limiting:** `CF_API_RATE_LIMITER` binding (200 req/10s) - shared across all DOs in worker. Rough budget: ~160 req/60s per 50-zone account (incl REST); ~7 such accounts can saturate.
 
 **Dual config:** wrangler.jsonc `vars` + optional env vars + KV runtime overrides

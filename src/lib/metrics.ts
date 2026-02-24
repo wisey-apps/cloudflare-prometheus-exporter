@@ -40,3 +40,38 @@ export const MetricDefinitionSchema = z.object({
 	type: MetricTypeSchema,
 	values: z.array(MetricValueSchema),
 });
+
+/**
+ * Merge multiple MetricDefinition arrays by metric name.
+ * Metrics with the same name have their values concatenated.
+ * Used when zone-chunked queries produce partial results that need recombining.
+ *
+ * @param arrays MetricDefinition arrays to merge.
+ * @returns Single merged array with values combined per metric name.
+ */
+export function mergeMetricDefinitions(
+	...arrays: MetricDefinition[][]
+): MetricDefinition[] {
+	if (arrays.length === 0) return [];
+
+	const first = arrays[0];
+	if (arrays.length === 1 && first !== undefined) return first;
+
+	const byName = new Map<string, MetricDefinition>();
+	for (const metrics of arrays) {
+		for (const m of metrics) {
+			const existing = byName.get(m.name);
+			if (existing) {
+				existing.values.push(...m.values);
+			} else {
+				byName.set(m.name, {
+					name: m.name,
+					help: m.help,
+					type: m.type,
+					values: [...m.values],
+				});
+			}
+		}
+	}
+	return Array.from(byName.values());
+}

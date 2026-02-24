@@ -2730,7 +2730,7 @@ export function getCloudflareMetricsClient(env: Env): CloudflareMetricsClient {
 	const logger = createLogger("cf_client_singleton", loggerConfig);
 
 	logger.info("Creating CloudflareMetricsClient singleton", {
-		rate_limit: "40/10s",
+		rate_limit: "200/10s",
 		log_level: loggerConfig.level,
 		log_format: loggerConfig.format,
 	});

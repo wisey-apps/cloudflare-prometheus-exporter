@@ -12,7 +12,7 @@ Export Cloudflare metrics to Prometheus. Built on Cloudflare Workers with Durabl
 - **Cloudflare Workers** - serverless edge deployment
 - **Durable Objects** - stateful counter accumulation for proper Prometheus semantics
 - **Background refresh** - alarms fetch data every 60s; scrapes return cached data instantly
-- **Rate limiting** - 40 req/10s with exponential backoff
+- **Rate limiting** - 200 req/10s with exponential backoff
 - **Multi-account** - automatically discovers and exports all accessible accounts/zones
 - **Runtime config API** - change settings without redeployment via REST endpoints
 - **Configurable** - zone filtering, metric denylist, label exclusion, custom metrics path, and more
@@ -429,7 +429,7 @@ For mixed accounts (enterprise + free zones), only free zones are skipped—paid
 │  │  - urql Client (GraphQL)                                                │   │
 │  │  - Cloudflare SDK (REST)                                                │   │
 │  │  - DataLoader: firewallRulesLoader (batches Promise.all calls)          │   │
-│  │  - Global Rate limiter: 40 req/10s with exponential backoff             │   │
+│  │  - Global Rate limiter: 200 req/10s with exponential backoff            │   │
 │  └─────────────────────────────────────────────────────────────────────────┘   │
 └────────────────────────────────────────────────────────────────────────────────┘
 ```

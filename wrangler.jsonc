@@ -48,7 +48,7 @@
 			"name": "CF_API_RATE_LIMITER",
 			"namespace_id": "1",
 			"simple": {
-				"limit": 40,
+				"limit": 200,
 				"period": 10
 			}
 		}
