@@ -2560,12 +2560,19 @@ export class CloudflareMetricsClient {
 		const maxtimeMs = new Date(maxtime).getTime();
 		const mintime = new Date(maxtimeMs - 60_000).toISOString();
 
+		this.logger.debug("Hostname metrics time range", {
+			mintime,
+			maxtime,
+			delay: hostMetricsDelaySeconds ?? "anchor",
+			host_count: hosts.length,
+		});
+
 		const result = await this.gql.query(HostnameHttpMetricsQuery, {
 			zoneIDs: zoneIds,
 			mintime,
 			maxtime,
 			limit: this.config.queryLimit,
-			hosts: [...hosts],
+			hosts,
 		});
 
 		if (result.error) {

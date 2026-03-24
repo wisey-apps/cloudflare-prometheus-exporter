@@ -8,7 +8,7 @@ Export Cloudflare metrics to Prometheus. Built on Cloudflare Workers with Durabl
 
 ## Features
 
-- **95+ Prometheus metrics** - requests, bandwidth, threats, workers, load balancers, SSL certs, hostname-level analytics, network analytics, Magic Transit tunnel health/traffic/SLO, Magic Firewall per-rule visibility, stream video/live, and more
+- **90+ Prometheus metrics** - requests, bandwidth, threats, workers, load balancers, SSL certs, hostname-level analytics, network analytics, Magic Transit tunnel health/traffic/SLO, Magic Firewall per-rule visibility, stream video/live, and more
 - **Cloudflare Workers** - serverless edge deployment
 - **Durable Objects** - stateful counter accumulation for proper Prometheus semantics
 - **Background refresh** - alarms fetch data every 60s; scrapes return cached data instantly

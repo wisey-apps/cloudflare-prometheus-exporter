@@ -59,7 +59,7 @@ const ConfigValueSchemas = {
 	excludeHost: z.boolean(),
 	httpStatusGroup: z.boolean(),
 	hostMetricsAllowlist: z.string(),
-	hostMetricsDelaySeconds: z.number().int().nonnegative(),
+	hostMetricsDelaySeconds: z.number().int().min(30),
 } as const;
 
 /**

@@ -1046,7 +1046,7 @@ export const LandingPage: FC<Props> = ({ config }) => {
 													type="number"
 													id="cfg-hostMetricsDelaySeconds"
 													class="config-input pr-8"
-													min="0"
+													min="30"
 													onchange="onFieldChange('hostMetricsDelaySeconds', Number(this.value))"
 												/>
 												<button
