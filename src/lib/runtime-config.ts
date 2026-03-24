@@ -198,7 +198,7 @@ export function getEnvDefaults(env: Env): ResolvedConfig {
 		hostMetricsAllowlist: optionalEnv.HOST_METRICS_ALLOWLIST?.trim() ?? "",
 		hostMetricsDelaySeconds: z.coerce
 			.number()
-			.catch(120)
+			.catch(60)
 			.parse(env.HOST_METRICS_DELAY_SECONDS),
 	};
 }

@@ -63,7 +63,7 @@ Set in `wrangler.jsonc` or via `wrangler secret put`:
 | `CF_ZONES` | - | Comma-separated zone IDs to include (default: all) |
 | `CF_FREE_TIER_ACCOUNTS` | - | Comma-separated account IDs using free tier (skips paid-tier metrics) |
 | `HOST_METRICS_ALLOWLIST` | - | Comma-separated hostnames for hostname-level metrics (max 50). Empty disables. Adds 1 extra GraphQL call per account per refresh cycle. `EXCLUDE_HOST=true` also disables. |
-| `HOST_METRICS_DELAY_SECONDS` | 120 | Ingestion delay for hostname metrics (seconds). Lower values = fresher data for alerting but risk incomplete data. Independent from `SCRAPE_DELAY_SECONDS`. |
+| `HOST_METRICS_DELAY_SECONDS` | 60 | Ingestion delay for hostname metrics (seconds). Lower values = fresher data for alerting but risk incomplete data. Independent from `SCRAPE_DELAY_SECONDS`. |
 | `METRICS_PATH` | /metrics | Custom path for metrics endpoint |
 | `BASIC_AUTH_USER` | - | Username for basic auth (secret, default: no auth, requires `BASIC_AUTH_PASSWORD`) |
 | `BASIC_AUTH_PASSWORD` | - | Password for basic auth (secret, default: no auth, requires `BASIC_AUTH_USER`) |
@@ -420,7 +420,7 @@ Traffic volume metrics across Cloudflare's Network Analytics v2 datasets. All ar
 
 Requires `HOST_METRICS_ALLOWLIST` to be set (max 50 hostnames). Disabled when `EXCLUDE_HOST=true`.
 
-All hostname metrics are **gauge snapshots** of the **last completed minute**, designed for alerting. The ingestion delay is controlled by `HOST_METRICS_DELAY_SECONDS` (default: 120s) independently from the global `SCRAPE_DELAY_SECONDS`. Hosts with zero traffic in the minute will not emit series.
+All hostname metrics are **gauge snapshots** of the **last completed minute**, designed for alerting. The ingestion delay is controlled by `HOST_METRICS_DELAY_SECONDS` (default: 60s) independently from the global `SCRAPE_DELAY_SECONDS`. Hosts with zero traffic in the minute will not emit series.
 
 **Request counts:**
 
